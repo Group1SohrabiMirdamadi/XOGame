@@ -119,3 +119,162 @@ class _XOGame(_XOTable):
         result = None
         result = self._calculate_result()
         return result
+
+
+class Game_Eng:
+
+    def __init__(self, player1: Union[_Player, Literal['x', 'o']], player2: Union[_Player, Literal['x', 'o']],
+                 rounds: int = 1):
+        self.player1 = player1
+        self.player2 = player2
+        self.rounds = rounds
+        self.game = _XOGame(self.player1, self.player2)
+
+    @property
+    def player1(self):
+        return self._player1
+
+    @player1.setter
+    def player1(self, value: Union[_Player, Literal['x', 'o']]):
+        try:
+            if isinstance(value, _Player or Literal['x', 'o']):
+                self._player1 = value
+            else:
+                raise _XOGame.InvalidPlayer("Player 1 type is not right", value)
+        except _XOGame.InvalidPlayer as e:
+            print("Error in assigning player1-->", e)
+
+    @property
+    def player2(self):
+        return self._player2
+
+    @player2.setter
+    def player2(self, value: Union[_Player, Literal['x', 'o']]):
+        try:
+            if isinstance(value, _Player or Literal['x', 'o']):
+                self._player2 = value
+            else:
+                raise _XOGame.InvalidPlayer("Player 2 type is not right", value)
+        except _XOGame.InvalidPlayer as e:
+            print("Error in assigning player2-->", e)
+
+    @property
+    def rounds(self):
+        return self._rounds
+
+    @rounds.setter
+    def rounds(self, value):
+        try:
+            if value > 0 and isinstance(value, int):
+                self._rounds = value
+            else:
+                raise _XOGame.InvalidRounds("Number of rounds should be a number and bigger than zero", value)
+        except _XOGame.InvalidRounds as e:
+            print("Error in Assigning Rounds-->", e)
+
+    def run_game(self):
+        player1_counter = 0
+        player2_counter = 0
+
+        for i in range(1, self.rounds):
+            # self.game.reset_xo_map()
+            except_checker = False
+            _XOTable.xo_map = {k: None for k in range(1, 10)}
+            result = None
+            print(self.game.__str__())
+            for j in range(9):
+                result = self.game.winner()
+                if result == None:
+                    while True:
+                        try:
+                            print(f"Please {self.player1.name} Enter your mark number: ")
+                            mark_player = int(input())
+                            if 1 <= mark_player <= 9:
+                                if _XOTable.xo_map[mark_player]:
+                                    raise _XOGame.InvalidCellError('It filled before', mark_player)
+                                # assert not _XOTable.xo_map[mark_player]
+                                break
+
+                            else:
+                                # assert mark_player > 9 and mark_player < 1
+                                raise _XOGame.InvalidCellError('Invalid input', mark_player)
+
+                        except _XOGame.InvalidCellError as e:
+                            print(e)
+                            print('Try again!')
+                            continue
+                        except ValueError as v:
+                            print(v)
+                            print('Try again!')
+                            continue
+                if 0 < mark_player < 10 and result == None:
+                    self.game.mark(mark_player, self.player1)
+                    result = self.game.winner()
+                result = self.game.winner()
+                if result == None:
+                    while True:
+                        try:
+                            print(f"Please {self.player2.name} Enter your mark number: ")
+                            mark_player = int(input())
+                            if 1 <= mark_player <= 9:
+                                if _XOTable.xo_map[mark_player]:
+                                    raise _XOGame.InvalidCellError('It filled before', mark_player)
+                                # assert not _XOTable.xo_map[mark_player]
+                                break
+
+                            else:
+                                # assert mark_player > 9 and mark_player < 1
+                                raise _XOGame.InvalidCellError('Invalid input', mark_player)
+
+                        except _XOGame.InvalidCellError as e:
+                            print(e)
+                            print('Try again!')
+                            continue
+                        except ValueError as v:
+                            print(v)
+                            print('Try again!')
+                            continue
+                if 0 < mark_player < 10 and result == None:
+                    self.game.mark(mark_player, self.player2)
+                    result = self.game.winner()
+
+                try:
+                    if result:
+                        if result == self.player1.sign:
+                            player1_counter += 1
+                        if result == self.player2.sign:
+                            player2_counter += 1
+
+                        raise self.game.FinishedGameError(f"You Won in Round {i}", result)
+
+                except self.game.FinishedGameError as e:
+                    if except_checker == False:
+                        print("Ended and", e)
+                        except_checker = True
+
+        try:
+            if player1_counter > ((self.rounds) / 2):
+               raise self.game.FinishedGameError("Won All The Game", self.player1.name)
+        except self.game.FinishedGameError as e:
+            print(e)
+
+
+        try:
+            if player2_counter > ((self.rounds) / 2):
+               raise self.game.FinishedGameError("Won All The Game", self.player1.name)
+        except self.game.FinishedGameError as e:
+            print(e)
+
+
+def main():
+
+    player1 = _Player("Mamad", "x")
+    player2 = _Player("Saeed", "o")
+    rounds = 3
+
+    x = Game_Eng(player1,player2, rounds)
+    x.run_game()
+
+
+
+main()
